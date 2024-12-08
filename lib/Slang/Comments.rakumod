@@ -28,7 +28,7 @@ Then, in your program:
 Output:
 
   starting!
-  --> for 100 .. 110 { #= ### running [####             ] 3/11 (27%).  Elapsed: 2 seconds, Remaining: 5 seconds
+  --> for 100 .. 110 { #= ### running [####             ] 3/11 (27%).  about 5 seconds remaining
   we are done!
 
 =head1 DESCRIPTION
@@ -45,8 +45,13 @@ bar.
     do-something-complicated;
   }
 
-If you end your comment with three of the same character, those will be used in the hash mark
-instead of a '#'.
+If the comment ends with three of the same character, those will be used in the hash mark
+instead of a '#'.  So the above will show a progress bar like this:
+
+  --> for 100 .. 110 { #= ### calculating ... [....              ] 3/11 (27%)
+
+A percentage, count and estimated time remaining will be shown if the number of elements can
+be easily computed.
 
 To turn off the diagnostics, just don't "use" the module, For instance, comment it out, like so:
 
@@ -123,11 +128,11 @@ my class Progress {
     my $remaining = approx-time($remaining-items * $approx-time-per-item);
     my $width = 50;
     with $.columns -> $c {
-      $width =  ( $c - "--> $!desc [] XXX/XXX (XX%).  Elapsed: XX minutes, Remaining: XX minutes".chars ) * 3 div 4;
+      $width =  ( $c - "--> $!desc [] XXX/XXX (XX%).  Elapsed: XX minutes, about XX minutes remaining".chars ) * 3 div 4;
     }
     my $progress-bar = ( $!progress-char x ($!i / $!expected * $width).Int ).fmt('%-' ~ $width ~ 's');
     my $percent = ($!i / $!expected * 100).fmt("%2d");
-    print "\r--> $!desc [$progress-bar] $!i/$!expected ({ $percent }%).  Elapsed: $elapsed, Remaining: $remaining ";
+    print "\r--> $!desc [$progress-bar] $!i/$!expected ({ $percent }%).  about $remaining remaining";
     if $!i >= $!expected {
       print "\r" ~ t.erase-to-end-of-line;
     }

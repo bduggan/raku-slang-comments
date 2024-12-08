@@ -29,7 +29,7 @@ Then, in your program:
 Output:
 
     starting!
-    --> for 100 .. 110 { #= ### running [####             ] 3/11 (27%).  Elapsed: 2 seconds, Remaining: 5 seconds
+    --> for 100 .. 110 { #= ### running [####             ] 3/11 (27%).  about 5 seconds remaining
     we are done!
 
 DESCRIPTION
@@ -44,7 +44,11 @@ To use it, attach a comment to a for-loop using Raku's pod-declarator syntax (#=
       do-something-complicated;
     }
 
-If you end your comment with three of the same character, those will be used in the hash mark instead of a '#'.
+If the comment ends with three of the same character, those will be used in the hash mark instead of a '#'. So the above will show a progress bar like this:
+
+    --> for 100 .. 110 { #= ### calculating ... [....              ] 3/11 (27%)
+
+A percentage, count and estimated time remaining will be shown if the number of elements can be easily computed.
 
 To turn off the diagnostics, just don't "use" the module, For instance, comment it out, like so:
 
