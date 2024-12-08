@@ -19,7 +19,7 @@ Then, in your program:
 
     say "starting!";
 
-    for 100 .. 110 {  #= ### running ...
+    for 100 .. 110 {  #= ### running
       sleep 1;
     }
 
@@ -28,7 +28,7 @@ Then, in your program:
 Output:
 
     starting!
-    --> for 100 .. 110 { #= ### running ... [##########                                        ] 3/11 (18%).  Elapsed: 2 seconds, Remaining: 9 seconds
+    --> for 100 .. 110 { #= ### running [##########                                        ] 3/11 (18%).  Elapsed: 2 seconds, Remaining: 9 seconds
     we are done!
 
 DESCRIPTION
@@ -42,6 +42,8 @@ To use it, attach a comment to a for-loop using Raku's pod-declarator syntax (#=
     for 1..10 {  #= ### calculating ...
       do-something-complicated;
     }
+
+If you end your comment with three of the same character, those will be used in the hash mark instead of a '#'.
 
 To turn off the diagnostics, just don't "use" the module, For instance, comment it out, like so:
 

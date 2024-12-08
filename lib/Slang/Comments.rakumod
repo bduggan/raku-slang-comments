@@ -1,4 +1,5 @@
 module Slang::Comments {
+
 =begin pod
 
 =head1 NAME
@@ -17,7 +18,7 @@ Then, in your program:
 
   say "starting!";
 
-  for 100 .. 110 {  #= ### running ...
+  for 100 .. 110 {  #= ### running
     sleep 1;
   }
 
@@ -26,7 +27,7 @@ Then, in your program:
 Output:
 
   starting!
-  --> for 100 .. 110 { #= ### running ... [##########                                        ] 3/11 (18%).  Elapsed: 2 seconds, Remaining: 9 seconds
+  --> for 100 .. 110 { #= ### running [##########                                        ] 3/11 (18%).  Elapsed: 2 seconds, Remaining: 9 seconds
   we are done!
 
 =head1 DESCRIPTION
@@ -42,6 +43,9 @@ bar.
   for 1..10 {  #= ### calculating ...
     do-something-complicated;
   }
+
+If you end your comment with three of the same character, those will be used in the hash mark
+instead of a '#'.
 
 To turn off the diagnostics, just don't "use" the module, For instance, comment it out, like so:
 
@@ -85,6 +89,7 @@ my class Progress {
   has $.why;
   has $.desc;
   has $.columns = try qx[tput cols].trim;
+  has $.progress-char = '#';
 
   has $.i = 1;
   has $.expected;
@@ -95,6 +100,10 @@ my class Progress {
     $!expected = $src.elems unless $!;
     $!started = DateTime.now;
     $!desc = $!code.lines.head;
+    my $ends = $!why.trim.substr(* - 3);
+    if $ends.comb.unique == 1 {
+      $!progress-char = $ends.comb[0];
+    }
   }
 
   method update {
@@ -115,7 +124,7 @@ my class Progress {
     with $.columns -> $c {
       $width =  ( $c - "--> $!desc [] XXX/XXX (XX%).  Elapsed: XX minutes, Remaining: XX minutes".chars ) * 3 div 4;
     }
-    my $progress-bar = ( "#" x ($!i / $!expected * $width).Int ).fmt('%-' ~ $width ~ 's');
+    my $progress-bar = ( $!progress-char x ($!i / $!expected * $width).Int ).fmt('%-' ~ $width ~ 's');
     my $percent = ($!i / $!expected * 100).fmt("%2d");
     print "\r--> $!desc [$progress-bar] $!i/$!expected ({ $percent }%).  Elapsed: $elapsed, Remaining: $remaining ";
     if $!i >= $!expected {
