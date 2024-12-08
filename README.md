@@ -4,7 +4,7 @@
 NAME
 ====
 
-Slang::Comments - Use comments to get diagnostics from a running program.
+Slang::Comments - Use comments to show diagnostics from a running program.
 
 SYNOPSIS
 ========
@@ -15,6 +15,7 @@ First,
 
 Then, in your program:
 
+    #!/usr/bin/env raku
     use Slang::Comments;
 
     say "starting!";
@@ -28,7 +29,7 @@ Then, in your program:
 Output:
 
     starting!
-    --> for 100 .. 110 { #= ### running [##########                                        ] 3/11 (18%).  Elapsed: 2 seconds, Remaining: 9 seconds
+    --> for 100 .. 110 { #= ### running [####             ] 3/11 (27%).  Elapsed: 2 seconds, Remaining: 5 seconds
     we are done!
 
 DESCRIPTION

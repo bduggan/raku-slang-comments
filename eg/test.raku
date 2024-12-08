@@ -3,7 +3,7 @@ use Slang::Comments;
 
 say "starting!";
 
-for 100 .. 110 {  #= ### running ...
+for 100 .. 110 {  #= ### running
   sleep 1;
 }
 
