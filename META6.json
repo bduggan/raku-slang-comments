@@ -1,0 +1,23 @@
+{
+  "name" : "Slang::Comments",
+  "authors" : [
+    "Brian Duggan"
+  ],
+  "provides" : {
+    "Slang::Comments" : "lib/Slang/Comments.rakumod"
+   },
+  "build-depends" : [ "Slangify" ],
+  "depends" : [
+    "Terminal::ANSI:ver<0.0.25+>"
+  ],
+  "description" : "Your module description",
+  "tags" : [
+    "tags go here"
+  ],
+  "license" : "MIT",
+  "raku" : "6.*",
+  "version" : "0.0.1",
+  "auth" : "zef:bduggan",
+  "source-url" : "git://github.com/bduggan/raku-slang-comments.git"
+}
+
