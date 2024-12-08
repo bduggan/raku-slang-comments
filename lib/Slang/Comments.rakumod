@@ -7,6 +7,12 @@ Slang::Comments - Use comments to get diagnostics from a running program.
 
 =head1 SYNOPSIS
 
+First,
+
+  export RAKUDO_RAKUAST=1
+
+Then, in your program:
+
   use Slang::Comments;
 
   say "starting!";
@@ -44,6 +50,10 @@ To turn off the diagnostics, just don't "use" the module, For instance, comment 
     do-something-complicated;
   }
 
+This module only works with RakuAST, so you need to set the RAKUDO_RAKUAST environment variable to a true value.
+
+  export RAKUDO_RAKUAST=1
+
 =head1 AUTHOR
 
 Brian Duggan
@@ -65,8 +75,11 @@ sub approx-time($s) {
   return "about { $seconds div 86400 } days";
 }
 
+BEGIN {
+  warn "sorry, Slang::Comments requires AST support: please set RAKUDO_RAKUAST to a true value" unless %*ENV<RAKUDO_RAKUAST>;
+}
+
 sub start-slang-comments($source,$code,$why,$file,$from) is export {
-  warn "sorry, Slang::Comments requires ast: RAKUDO_RAKUAST is not set" unless %*ENV<RAKUDO_RAKUAST>:exists;
   # source is the for loop "source" (e.g. a range)
   # code is the code, parsed.
   # why is the declarator pod

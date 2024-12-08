@@ -17,7 +17,7 @@ my $badges = qq:to/MD/;
  MD
 
 multi MAIN('test', Bool :$v) {
-  my $env = '';
+  my $env = 'RAKUDO_RAKUAST=1 ';
   if $*DISTRO ~~ /macos/ {
     $env ~= 'DYLD_LIBRARY_PATH=. ';
   }
@@ -52,7 +52,7 @@ sub update-changes($version, $next) {
 multi MAIN('docs') {
   "README.md".IO.spurt: $badges ~ "\n";
   shell qq:to/SH/;
-    raku -Ilib --doc=Markdown $readme-src >> README.md
+    RAKUDO_RAKUAST=1 raku -Ilib --doc=Markdown $readme-src >> README.md
     SH
   #sub recurse($dir) {
   #  recurse($_) for dir($dir, test => { $dir.IO.child($_).d && !.starts-with('.') });

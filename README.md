@@ -9,6 +9,12 @@ Slang::Comments - Use comments to get diagnostics from a running program.
 SYNOPSIS
 ========
 
+First,
+
+    export RAKUDO_RAKUAST=1
+
+Then, in your program:
+
     use Slang::Comments;
 
     say "starting!";
@@ -43,6 +49,10 @@ To turn off the diagnostics, just don't "use" the module, For instance, comment 
     for 1..10 {  #= ### calculating ...
       do-something-complicated;
     }
+
+This module only works with RakuAST, so you need to set the RAKUDO_RAKUAST environment variable to a true value.
+
+    export RAKUDO_RAKUAST=1
 
 AUTHOR
 ======
