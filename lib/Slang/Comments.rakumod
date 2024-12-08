@@ -4,7 +4,7 @@ module Slang::Comments {
 
 =head1 NAME
 
-Slang::Comments - Use comments to show diagnostics from a running program.
+Slang::Comments - Use comments to provide diagnostics for a Raku program
 
 =head1 SYNOPSIS
 
