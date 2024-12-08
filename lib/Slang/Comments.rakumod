@@ -75,8 +75,8 @@ sub approx-time($s) {
   return "about { $seconds div 86400 } days";
 }
 
-BEGIN {
-  warn "sorry, Slang::Comments requires AST support: please set RAKUDO_RAKUAST to a true value" unless %*ENV<RAKUDO_RAKUAST>;
+INIT {
+  note "sorry, Slang::Comments requires AST support: please set RAKUDO_RAKUAST to a true value" unless %*ENV<RAKUDO_RAKUAST>;
 }
 
 sub start-slang-comments($source,$code,$why,$file,$from) is export {
