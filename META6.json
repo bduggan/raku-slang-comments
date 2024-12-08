@@ -10,9 +10,9 @@
   "depends" : [
     "Terminal::ANSI:ver<0.0.25+>"
   ],
-  "description" : "Your module description",
+  "description" : "Use comments to provide diagnostics for a Raku program",
   "tags" : [
-    "tags go here"
+    "slang"
   ],
   "license" : "MIT",
   "raku" : "6.*",
