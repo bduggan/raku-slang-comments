@@ -84,6 +84,7 @@ my class Progress {
   has $.code;
   has $.why;
   has $.desc;
+  has $.columns = try qx[tput cols].trim;
 
   has $.i = 1;
   has $.expected;
@@ -111,6 +112,9 @@ my class Progress {
     my $approx-time-per-item = ($!i > 0) ?? (DateTime.now - $!started) / $!i !! 0;
     my $remaining = approx-time($remaining-items * $approx-time-per-item);
     my $width = 50;
+    with $.columns -> $c {
+      $width =  ( $c - "--> $!desc [] XXX/XXX (XX%).  Elapsed: XX minutes, Remaining: XX minutes".chars ) * 3 div 4;
+    }
     my $progress-bar = ( "#" x ($!i / $!expected * $width).Int ).fmt('%-' ~ $width ~ 's');
     my $percent = ($!i / $!expected * 100).fmt("%2d");
     print "\r--> $!desc [$progress-bar] $!i/$!expected ({ $percent }%).  Elapsed: $elapsed, Remaining: $remaining ";
