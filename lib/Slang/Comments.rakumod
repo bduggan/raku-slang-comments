@@ -79,40 +79,69 @@ INIT {
   note "sorry, Slang::Comments requires AST support: please set RAKUDO_RAKUAST to a true value" unless %*ENV<RAKUDO_RAKUAST>;
 }
 
-sub start-slang-comments($source,$code,$why,$file,$from) is export {
-  # source is the for loop "source" (e.g. a range)
-  # code is the code, parsed.
-  # why is the declarator pod
-  # file is the file name
-  # from is the starting character 
-  state Int $i = 0;
-  state DateTime $started;
-  state $expected;
-  if ($i == 0) {
-    my $src = try $source.EVAL;
-    $expected = $src.elems unless $!;
-    $started = DateTime.now;
+my class Progress {
+  has $.source;
+  has $.code;
+  has $.why;
+  has $.desc;
+
+  has $.i = 0;
+  has $.expected;
+  has DateTime $.started;
+
+  method TWEAK {
+    my $src = try $!source.EVAL;
+    $!expected = $src.elems unless $!;
+    $!started = DateTime.now;
+    $!desc = $!code.lines.head;
     print "### Starting";
   }
-  my $elapsed = approx-time(DateTime.now - $started);
-  my $desc = $code.lines.head;
 
-  if ($expected) {
-    my $remaining-items = $expected - $i;
-    my $approx-time-per-item = ($i > 0) ?? (DateTime.now - $started) / $i !! 0;
+  method update {
+    if $!expected {
+      self.update-expected
+    } else {
+      self.update-no-expected
+    }
+  }
+
+  method update-expected {
+    my $elapsed = approx-time(DateTime.now - $!started);
+    my $remaining-items = $!expected - $!i;
+    my $approx-time-per-item = ($!i > 0) ?? (DateTime.now - $!started) / $!i !! 0;
     my $remaining = approx-time($remaining-items * $approx-time-per-item);
-    my $progress-bar = ( "#" x ($i / ( $expected - 1) * 50).Int ).fmt('%-50s');
+    my $progress-bar = ( "#" x ($!i / ( $!expected - 1) * 50).Int ).fmt('%-50s');
 
-    if $i == $expected - 1 {
+    if $!i == $!expected - 1 {
       print "\r" ~ t.erase-to-end-of-line;
       return;
     }
-    my $percent = ($i / $expected * 100).fmt("%2d");
-    $i++;
-    print "\r--> $desc [$progress-bar] $i/$expected ({ $percent }%).  Elapsed: $elapsed, Remaining: $remaining ";
+    my $percent = ($!i / $!expected * 100).fmt("%2d");
+    $!i++;
+    print "\r--> $!desc [$progress-bar] $!i/$!expected ({ $percent }%).  Elapsed: $elapsed, Remaining: $remaining ";
+  }
+
+  method update-no-expected {
+    my $elapsed = approx-time(DateTime.now - $!started);
+    $!i++;
+    print "\r--> $!desc [$!i of ??? ].  Elapsed: $elapsed";
+  }
+}
+
+my %updaters;
+
+sub slang-comments-update-progress(
+  $source, # the for loop "source" (e.g. a range)
+  $code,   # parsed code
+  $why,    # the declarator pod
+  $file,   # file name
+  $from    # starting character position in the source file
+) is export {
+  my $key = $file ~ ':' ~ $from;
+  with %updaters{ $key } -> $u {
+    $u.update;
   } else {
-    $i++;
-    print "\r--> $desc [$i of ??? ].  Elapsed: $elapsed";
+    %updaters{ $key } := Progress.new(:$source, :$code, :$why);
   }
 }
 
@@ -126,7 +155,7 @@ role Comments::Actions {
     my $why = $ast.body.WHY.trailing;
     my $new =
       '{'
-       ~ 'start-slang-comments('
+       ~ 'slang-comments-update-progress('
        ~ 'q[[[' ~ $ast.source.DEPARSE ~ ']]],'
        ~ 'q[[[' ~ $orig-code ~ ']]],'
        ~ 'q[[[' ~ $why ~ ']]],'
