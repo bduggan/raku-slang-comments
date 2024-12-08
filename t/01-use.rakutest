@@ -1,0 +1,26 @@
+#!raku
+
+use Test;
+use Slang::Comments;
+
+plan 3;
+
+unless %*ENV<RAKUDO_RAKUAST> {
+  skip-rest "RAKUDO_RAKUAST is not set";
+  exit;
+}
+
+my @got;
+my $handle = $*OUT.^find_method('print').wrap(-> |x { @got.push(x) } );
+
+for 1..10 { #= ### running
+  my $x = 12;
+}
+
+$handle.restore;
+
+ok 1, 'lives';
+
+like @got[0].Str, / 'Starting' /;
+like @got[1], / 'running' /;
+
