@@ -85,7 +85,7 @@ my class Progress {
   has $.why;
   has $.desc;
 
-  has $.i = 0;
+  has $.i = 1;
   has $.expected;
   has DateTime $.started;
 
@@ -94,7 +94,6 @@ my class Progress {
     $!expected = $src.elems unless $!;
     $!started = DateTime.now;
     $!desc = $!code.lines.head;
-    print "### Starting";
   }
 
   method update {
@@ -103,6 +102,7 @@ my class Progress {
     } else {
       self.update-no-expected
     }
+    self;
   }
 
   method update-expected {
@@ -110,15 +110,14 @@ my class Progress {
     my $remaining-items = $!expected - $!i;
     my $approx-time-per-item = ($!i > 0) ?? (DateTime.now - $!started) / $!i !! 0;
     my $remaining = approx-time($remaining-items * $approx-time-per-item);
-    my $progress-bar = ( "#" x ($!i / ( $!expected - 1) * 50).Int ).fmt('%-50s');
-
-    if $!i == $!expected - 1 {
-      print "\r" ~ t.erase-to-end-of-line;
-      return;
-    }
+    my $width = 50;
+    my $progress-bar = ( "#" x ($!i / $!expected * $width).Int ).fmt('%-' ~ $width ~ 's');
     my $percent = ($!i / $!expected * 100).fmt("%2d");
-    $!i++;
     print "\r--> $!desc [$progress-bar] $!i/$!expected ({ $percent }%).  Elapsed: $elapsed, Remaining: $remaining ";
+    if $!i >= $!expected {
+      print "\r" ~ t.erase-to-end-of-line;
+    }
+    $!i++;
   }
 
   method update-no-expected {
@@ -141,7 +140,7 @@ sub slang-comments-update-progress(
   with %updaters{ $key } -> $u {
     $u.update;
   } else {
-    %updaters{ $key } := Progress.new(:$source, :$code, :$why);
+    %updaters{ $key } := Progress.new(:$source, :$code, :$why).update;
   }
 }
 
