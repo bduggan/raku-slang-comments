@@ -21,6 +21,6 @@ $handle.restore;
 
 ok 1, 'lives';
 
-like @got[0].Str, / 'Starting' /;
+like @got[0].Str, / 'running' /;
 like @got[1], / 'running' /;
 
