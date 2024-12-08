@@ -45,7 +45,7 @@ bar.
     do-something-complicated;
   }
 
-If the comment ends with three of the same character, those will be used in the hash mark
+If the comment ends with three of the same character, those will be used 
 instead of a '#'.  So the above will show a progress bar like this:
 
   --> for 100 .. 110 { #= ### calculating ... [....              ] 3/11 (27%)
