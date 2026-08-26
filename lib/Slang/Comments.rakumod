@@ -94,7 +94,7 @@ my class Progress {
   has $.code;
   has $.why;
   has $.desc;
-  has $.columns = try qx[tput cols].trim;
+  has $.columns = try qx[tput cols].trim || 80;
   has $.progress-char = '#';
 
   has $.i = 1;
