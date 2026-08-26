@@ -10,6 +10,8 @@ on:
 
 jobs:
   raku:
+    env:
+      RAKUDO_RAKUAST: 1
     strategy:
       matrix:
         os:
