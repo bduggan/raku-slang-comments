@@ -7,9 +7,7 @@
     "Slang::Comments" : "lib/Slang/Comments.rakumod"
    },
   "build-depends" : [ "Slangify" ],
-  "depends" : [
-    "Terminal::ANSI:ver<0.0.25+>"
-  ],
+  "depends" : [ ],
   "description" : "Use comments to provide diagnostics for a Raku program",
   "tags" : [
     "slang"

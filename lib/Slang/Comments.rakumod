@@ -72,9 +72,9 @@ Brian Duggan
 
 }
 
-use Terminal::ANSI::OO 't';
-
 use experimental :rakuast;
+
+my constant ERASE-TO-EOL = "\e[K";
 
 sub approx-time($s) {
   my $seconds = $s.Int;
@@ -134,7 +134,7 @@ my class Progress {
     my $percent = ($!i / $!expected * 100).fmt("%2d");
     print "\r--> $!desc [$progress-bar] $!i/$!expected ({ $percent }%).  about $remaining remaining";
     if $!i >= $!expected {
-      print "\r" ~ t.erase-to-end-of-line;
+      print "\r" ~ ERASE-TO-EOL;
     }
     $!i++;
   }
