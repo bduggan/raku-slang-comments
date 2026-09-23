@@ -1,0 +1,35 @@
+#!raku
+
+use Test;
+use Slang::Comments;
+
+plan 5;
+
+if Raku.?legacy {
+  skip-rest "requires the RakuAST frontend";
+  exit;
+}
+
+my @got;
+my $handle = $*OUT.^find_method('print').wrap(-> |x { @got.push(x.list[1..*].join) } );
+
+my @seen;
+for <a b> -> $x { #= ### pointy
+  @seen.push($x);
+}
+
+my $plain = 0;
+for ^3 { $plain++ }
+
+my $docs = 0;
+for ^3 { #= not a progress comment
+  $docs++;
+}
+
+$handle.restore;
+
+is-deeply @seen, [<a b>], 'pointy block body runs with its parameter bound';
+ok @got.grep(/'pointy'/) == 2, 'pointy block loop reports progress each iteration';
+is $plain, 3, 'loop without a declarator comment runs';
+is $docs, 3, 'loop with a declarator comment not starting with three hashes runs';
+nok @got.grep(/'not a progress comment'/), 'loop with a declarator comment not starting with three hashes reports no progress';

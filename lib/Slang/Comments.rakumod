@@ -60,7 +60,8 @@ To turn off the diagnostics, just don't "use" the module, For instance, comment 
     do-something-complicated;
   }
 
-This module only works with RakuAST, so you need to set the RAKUDO_RAKUAST environment variable to a true value.
+This module only works with the RakuAST frontend. On Rakudo versions where RakuAST is
+not yet the default, set the RAKUDO_RAKUAST environment variable to 1.
 
   export RAKUDO_RAKUAST=1
 
@@ -86,7 +87,7 @@ sub approx-time($s) {
 }
 
 INIT {
-  note "sorry, Slang::Comments requires AST support: please set RAKUDO_RAKUAST to a true value" unless %*ENV<RAKUDO_RAKUAST>;
+  note "sorry, Slang::Comments requires the RakuAST frontend: please set RAKUDO_RAKUAST=1" if Raku.?legacy;
 }
 
 my class Progress {
@@ -166,24 +167,20 @@ sub slang-comments-update-progress(
 role Comments::Actions {
   method statement-control:sym<for>(|match) {
     my $ast = callsame;
+    my $why = .trailing with $ast.body.WHY;
+    return $ast unless $why && $why.starts-with('###');
     my $file = $*ORIGIN-SOURCE.original-file;
     my $from = $ast.origin.from;
-    my $orig-body = $ast.body.DEPARSE;
     my $orig-code = $ast.DEPARSE;
-    my $why = $ast.body.WHY.trailing;
-    my $new =
-      '{'
-       ~ 'slang-comments-update-progress('
+    my $call =
+       'slang-comments-update-progress('
        ~ 'q[[[' ~ $ast.source.DEPARSE ~ ']]],'
        ~ 'q[[[' ~ $orig-code ~ ']]],'
        ~ 'q[[[' ~ $why ~ ']]],'
        ~ 'q[[[' ~ $file ~ ']]],'
        ~ 'q[[[' ~ $from ~ ']]],'
-       ~ ');'
-       ~ $orig-body
-       ~ ';'
-      ~ '}';
-    $ast.body.replace-body($new.AST);
+       ~ ');';
+    $ast.body.body.statement-list.unshift-statement($call.AST.statements.head);
   }
 }
 
