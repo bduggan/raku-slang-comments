@@ -183,7 +183,7 @@ role Comments::Actions {
        ~ $orig-body
        ~ ';'
       ~ '}';
-    $ast.body.replace-body($new.AST);
+    $ast.body.replace-body($new.AST.statements.head.expression.body);
   }
 }
 
