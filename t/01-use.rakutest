@@ -5,8 +5,8 @@ use Slang::Comments;
 
 plan 3;
 
-unless %*ENV<RAKUDO_RAKUAST> {
-  skip-rest "RAKUDO_RAKUAST is not set";
+if Raku.?legacy {
+  skip-rest "requires the RakuAST frontend";
   exit;
 }
 

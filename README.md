@@ -57,7 +57,7 @@ To turn off the diagnostics, just don't "use" the module, For instance, comment 
       do-something-complicated;
     }
 
-This module only works with RakuAST, so you need to set the RAKUDO_RAKUAST environment variable to a true value.
+This module only works with the RakuAST frontend. On Rakudo versions where RakuAST is not yet the default, set the RAKUDO_RAKUAST environment variable to 1.
 
     export RAKUDO_RAKUAST=1
 
