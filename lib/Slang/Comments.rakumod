@@ -45,7 +45,7 @@ bar.
     do-something-complicated;
   }
 
-If the comment ends with three of the same character, those will be used 
+If the comment ends with three of the same character, those will be used
 instead of a '#'.  So the above will show a progress bar like this:
 
   --> for 100 .. 110 { #= ### calculating ... [....              ] 3/11 (27%)
@@ -91,10 +91,10 @@ INIT {
 }
 
 my class Progress {
-  has $.source;
-  has $.code;
-  has $.why;
-  has $.desc;
+  has $.source;  # might be a Range or Array
+  has Str $.code;
+  has Str $.why;
+  has Str $.desc;
   has $.columns = try qx[tput cols].trim || 80;
   has $.progress-char = '#';
 
@@ -103,8 +103,7 @@ my class Progress {
   has DateTime $.started;
 
   method TWEAK {
-    my $src = try $!source.EVAL;
-    $!expected = $src.elems unless $!;
+    $!expected = $!source.elems; # might be a soft failure, e.g. for a lazy list
     $!started = DateTime.now;
     $!desc = $!code.lines.head;
     my $ends = $!why.trim.substr(* - 3);
@@ -165,22 +164,26 @@ sub slang-comments-update-progress(
 }
 
 role Comments::Actions {
-  method statement-control:sym<for>(|match) {
+  method statement-control:sym<for>(Mu $match) {
     my $ast = callsame;
     my $why = .trailing with $ast.body.WHY;
     return $ast unless $why && $why.starts-with('###');
     my $file = $*ORIGIN-SOURCE.original-file;
     my $from = $ast.origin.from;
-    my $orig-code = $ast.DEPARSE;
-    my $call =
-       'slang-comments-update-progress('
-       ~ 'q[[[' ~ $ast.source.DEPARSE ~ ']]],'
-       ~ 'q[[[' ~ $orig-code ~ ']]],'
-       ~ 'q[[[' ~ $why ~ ']]],'
-       ~ 'q[[[' ~ $file ~ ']]],'
-       ~ 'q[[[' ~ $from ~ ']]],'
-       ~ ');';
-    $ast.body.body.statement-list.unshift-statement($call.AST.statements.head);
+    my $call = RakuAST::Statement::Expression.new(
+        expression =>
+          RakuAST::Call::Name.new(
+            name => RakuAST::Name.from-identifier("slang-comments-update-progress"),
+            args => RakuAST::ArgList.new(
+              $ast.source,
+              RakuAST::Literal.from-value($match.Str),
+              RakuAST::Literal.from-value($why[0]),
+              RakuAST::Literal.from-value($file),
+              RakuAST::Literal.from-value($from),
+            )
+          )
+    );
+    $ast.body.body.statement-list.unshift-statement($call);
   }
 }
 
