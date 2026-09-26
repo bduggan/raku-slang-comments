@@ -10,6 +10,11 @@ if Raku.?legacy {
   exit;
 }
 
+unless $*RAKU.compiler.version > v2026.08 {
+  skip-rest "requires Raku after version 2026.08, this is " ~ $*RAKU.compiler.version;
+  exit;
+}
+
 my @got;
 my $handle = $*OUT.^find_method('print').wrap(-> |x { @got.push(x) } );
 
